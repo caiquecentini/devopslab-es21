@@ -6,7 +6,12 @@ language: python
 
 # Versão que a aplicação suporta.                                                                                                                                                                        
 python:                                                                                                                                                                                                  
-  - "3.8"                                                                                                                                                                                              
+  - "3.8"     
+  
+addons:
+  sonarcloud:
+      organization: caiquecentini
+      token: ${SONAR_TOKEN}
 
 # Instalação de Módulos que são necessários para a Aplicação.                                                                                                                                            
 install:                                                                                                                                                                                                 
@@ -14,7 +19,8 @@ install:
 
 # Defini o script de Teste que deve rodar toda vez que o código for alterado.                                                                                                                            
 script:                                                                                                                                                                                                  
-  - pytest -v test.py
+  - pytest -v test.py || travis_terminate 1;
+  - sonar-scanner || travis_terminate 1;
 
   # Definir o Deploy no Heroku
 deploy:
@@ -24,14 +30,3 @@ deploy:
   app: devops-caique-esb21
   on:
       branch: main
-
-#  Sonar
-      addons:
-        sonarcloud:
-          organization: caiquecentini
-          token: ${SONAR_TOKEN}
-
-# Defini o script de Teste que deve rodar toda vez que o código for alterado.                                                                                                                            
-script:                                                                                                                                                                                                  
-  - python -m unittest -v test || travis_terminate 1;
-  - sonar-scanner || travis_terminate 1;
